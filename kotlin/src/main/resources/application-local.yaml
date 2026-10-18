@@ -1,0 +1,10 @@
+spring:
+  datasource:
+    url: jdbc:postgresql://localhost:5433/time_deposits
+    username: time_deposit
+    password: time_deposit
+
+  flyway:
+    locations:
+      - classpath:db/migration
+      - classpath:db/local
