@@ -1,6 +1,8 @@
 package org.ikigaidigital
 
 import org.assertj.core.api.Assertions.assertThat
+import org.ikigaidigital.application.domain.interest.InterestPolicy
+import org.ikigaidigital.application.domain.interest.PlanType
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
@@ -93,5 +95,21 @@ class TimeDepositCalculatorTest {
         calculator.updateBalance(listOf(deposit))
 
         assertThat(deposit.balance).isEqualTo(12020.01)
+    }
+
+    @Test
+    fun `uses an injected interest policy`() {
+        val policy = InterestPolicy(annualRate = 0.12, eligibleDays = 31..365)
+        val customCalculator = TimeDepositCalculator(mapOf(PlanType.BASIC to policy))
+        val deposit = TimeDeposit(1, "basic", 12000.0, 31)
+
+        customCalculator.updateBalance(listOf(deposit))
+
+        assertThat(deposit.balance).isEqualTo(12120.0)
+    }
+
+    @Test
+    fun `accepts an empty list`() {
+        calculator.updateBalance(emptyList())
     }
 }
