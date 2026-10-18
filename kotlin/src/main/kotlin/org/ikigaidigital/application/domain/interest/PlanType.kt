@@ -9,7 +9,6 @@ enum class PlanType(
     ;
 
     companion object {
-        fun from(value: String): PlanType? =
-            values().firstOrNull { it.value == value }
+        fun from(value: String): PlanType? = entries.firstOrNull { it.value == value }
     }
 }

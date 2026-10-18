@@ -6,7 +6,6 @@ import org.junit.jupiter.params.ParameterizedTest
 import org.junit.jupiter.params.provider.CsvSource
 
 class TimeDepositCalculatorTest {
-
     private val calculator = TimeDepositCalculator()
 
     @ParameterizedTest(name = "{0} at day {1} has balance {2} after updating")
