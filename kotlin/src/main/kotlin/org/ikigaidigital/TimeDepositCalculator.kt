@@ -1,27 +1,30 @@
 package org.ikigaidigital
 
+import org.ikigaidigital.application.domain.interest.InterestPolicies
+import org.ikigaidigital.application.domain.interest.InterestPolicy
+import org.ikigaidigital.application.domain.interest.PlanType
 import java.math.BigDecimal
 import java.math.RoundingMode
 
-class TimeDepositCalculator {
+class TimeDepositCalculator(
+    private val policies: Map<PlanType, InterestPolicy>,
+) {
+    constructor() : this(InterestPolicies.defaults())
+
     fun updateBalance(xs: List<TimeDeposit>) {
-        for (i in xs.indices) {
-            var interest = 0.0
-            if (xs[i].days > 30) {
-                if (xs[i].planType == "student") {
-                    if (xs[i].days < 366) {
-                        interest += xs[i].balance * 0.03 / 12
-                    }
-                } else if (xs[i].planType == "premium") {
-                    if (xs[i].days > 45) {
-                        interest += xs[i].balance * 0.05 / 12
-                    }
-                } else if (xs[i].planType == "basic") {
-                    interest += xs[i].balance * 0.01 / 12
-                }
-            }
-            val a2d = BigDecimal(interest).setScale(2, RoundingMode.HALF_UP)
-            xs[i].balance += a2d.toDouble()
+        xs.forEach { deposit ->
+            val interest =
+                PlanType
+                    .from(deposit.planType)
+                    ?.let(policies::get)
+                    ?.calculateInterest(deposit)
+                    ?: 0.0
+
+            val roundedInterest =
+                BigDecimal(interest)
+                    .setScale(2, RoundingMode.HALF_UP)
+
+            deposit.balance += roundedInterest.toDouble()
         }
     }
 }
